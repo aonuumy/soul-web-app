@@ -77,36 +77,47 @@
     </div>
 
     <script>
-        // А это — душа. Тут вся логика.
         const tg = Telegram.WebApp;
-        tg.ready(); // Говорим телеге, что мы готовы
-        tg.expand(); // Растягиваем на весь экран
 
-        // Приветствуем юзера
+        // Наша новая шпионская функция
+        function sendLogToBot(message) {
+            // Отправляем данные в специальном формате, чтобы бот понял, что это лог
+            tg.sendData(`web_app_log: ${message}`);
+        }
+
+        tg.ready();
+        tg.expand();
+
+        // --- ОТПРАВЛЯЕМ ПЕРВЫЙ ЛОГ, КАК ТОЛЬКО САЙТ ЗАГРУЗИЛСЯ ---
+        sendLogToBot('Сайт успешно загружен и готов к работе!');
+
         const user = tg.initDataUnsafe.user;
         const greetingDiv = document.getElementById('user-greeting');
         if (user?.first_name) {
-            greetingDiv.innerHTML = `
-                <h1>Привет, ${user.first_name}!</h1>
-                <p>Твой ID: ${user.id}</p>
-            `;
+            greetingDiv.innerHTML = `<h1>Привет, ${user.first_name}!</h1><p>Твой ID: ${user.id}</p>`;
         } else {
             greetingDiv.innerHTML = `<h1>Привет, бро!</h1>`;
         }
 
-        // Вешаем прослушку на кнопки
         document.getElementById('chats-btn').addEventListener('click', () => {
-            tg.showAlert('Этот раздел в разработке! Здесь можно будет настраивать бота в твоих чатах.');
+            tg.showAlert('Этот раздел в разработке!');
         });
         document.getElementById('donate-btn').addEventListener('click', () => {
             tg.showAlert('Донаты пока не завезли, но скоро будут!');
         });
+
         document.getElementById('support-btn').addEventListener('click', () => {
-            // Эта кнопка может сразу закрыть веб-приложение и отправить команду боту
+            // --- ОТПРАВЛЯЕМ ВТОРОЙ ЛОГ ПРИ НАЖАТИИ КНОПКИ ---
+            sendLogToBot('Нажата кнопка "Поддержка"');
+
+            // Пытаемся отправить основную команду
             tg.sendData('/support'); 
+            
+            // Закрываем окно (если команда не доходит, мы это увидим по логам)
             tg.close();
         });
     </script>
 
 </body>
 </html>
+
