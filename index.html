@@ -56,47 +56,43 @@
 
     <script>
         const tg = Telegram.WebApp;
-        const logOutput = document.getElementById('log-output');
-
-        function logOnScreen(message) {
-            const now = new Date();
-            const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            logOutput.innerHTML += `\n[${time}] ${message}`;
-            logOutput.scrollTop = logOutput.scrollHeight; // Автопрокрутка вниз
-        }
-
-        function sendLogToBot(message) {
-            try {
-                logOnScreen(`Пытаюсь отправить боту: "${message}"`);
-                tg.sendData(message);
-                logOnScreen(" > Команда tg.sendData выполнена.");
-            } catch (e) {
-                logOnScreen(` > ОШИБКА: ${e.message}`);
-            }
-        }
-
         tg.ready();
-        logOnScreen("WebApp готово.");
-        
-        // Отправляем лог о загрузке
-        sendLogToBot('web_app_log: Сайт загружен!');
+        tg.expand();
 
+        const user = tg.initDataUnsafe.user;
+        const greetingDiv = document.getElementById('user-greeting');
+        if (user?.first_name) {
+            greetingDiv.innerHTML = `<h1>Привет, ${user.first_name}!</h1><p>Твой ID: ${user.id}</p>`;
+        } else {
+            greetingDiv.innerHTML = `<h1>Привет, бро!</h1>`;
+        }
+
+        // --- ЛОГИКА ГЛАВНОЙ КНОПКИ ---
+        // Когда пользователь нажимает на синюю кнопку внизу, отправляем данные и закрываем
+        tg.onEvent('mainButtonClicked', function() {
+            tg.sendData('/support');
+            tg.close();
+        });
+
+        // Прячем кнопку, если нажали на что-то другое
         document.getElementById('chats-btn').addEventListener('click', () => {
-             logOnScreen("Нажата кнопка 'Управление чатами'.");
-             tg.showAlert('В разработке!');
-        });
-        document.getElementById('donate-btn').addEventListener('click', () => {
-            logOnScreen("Нажата кнопка 'Донаты'.");
-            tg.showAlert('В разработке!');
-        });
-        document.getElementById('support-btn').addEventListener('click', () => {
-            logOnScreen("Нажата кнопка 'Поддержка'.");
-            sendLogToBot('/support');
-            // tg.close(); // <--- ВОТ! УБРАЛИ ЗАКРЫТИЕ ДЛЯ ТЕСТА
+            tg.MainButton.hide();
+            tg.showAlert('Этот раздел в разработке!');
         });
 
+        document.getElementById('donate-btn').addEventListener('click', () => {
+            tg.MainButton.hide();
+            tg.showAlert('Донаты пока не завезли, но скоро будут!');
+        });
+
+        // Наша кнопка "Поддержка" теперь просто ПОКАЗЫВАЕТ синюю кнопку
+        document.getElementById('support-btn').addEventListener('click', () => {
+            tg.MainButton.setText('Отправить запрос в поддержку');
+            tg.MainButton.show();
+        });
     </script>
 
 </body>
 </html>
+
 
