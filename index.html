@@ -60,7 +60,7 @@
 
         function logOnScreen(message) {
             const now = new Date();
-            const time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+            const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             logOutput.innerHTML += `\n[${time}] ${message}`;
             logOutput.scrollTop = logOutput.scrollHeight; // Автопрокрутка вниз
         }
@@ -81,16 +81,22 @@
         // Отправляем лог о загрузке
         sendLogToBot('web_app_log: Сайт загружен!');
 
-        // ... остальная логика без изменений ...
+        document.getElementById('chats-btn').addEventListener('click', () => {
+             logOnScreen("Нажата кнопка 'Управление чатами'.");
+             tg.showAlert('В разработке!');
+        });
+        document.getElementById('donate-btn').addEventListener('click', () => {
+            logOnScreen("Нажата кнопка 'Донаты'.");
+            tg.showAlert('В разработке!');
+        });
         document.getElementById('support-btn').addEventListener('click', () => {
             logOnScreen("Нажата кнопка 'Поддержка'.");
             sendLogToBot('/support');
-            tg.close();
+            // tg.close(); // <--- ВОТ! УБРАЛИ ЗАКРЫТИЕ ДЛЯ ТЕСТА
         });
-        document.getElementById('chats-btn').addEventListener('click', () => tg.showAlert('В разработке!'));
-        document.getElementById('donate-btn').addEventListener('click', () => tg.showAlert('В разработке!'));
 
     </script>
 
 </body>
 </html>
+
